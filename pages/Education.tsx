@@ -7,12 +7,132 @@ import {
   PlayCircle, Clock, Award, BookOpen, ChevronLeft, 
   HeartPulse, Apple, Ambulance, Brain, Leaf, Baby, 
   Biohazard, Activity, Accessibility, Sun, Moon, 
-  Bookmark, Share2, Sparkles, CheckCircle, XCircle, ArrowRight
+  Bookmark, Share2, Sparkles, CheckCircle, XCircle, ArrowRight,
+  Download, Printer, Link as LinkIcon, Facebook, Twitter, MessageCircle
 } from 'lucide-react';
 
 // --- Icon Mapping Helper ---
 const IconMap: Record<string, React.ElementType> = {
   HeartPulse, Apple, Ambulance, Brain, Leaf, Baby, Biohazard, Activity, Accessibility, Sun
+};
+
+// --- Sub-Component: Certificate Modal ---
+const CertificateModal: React.FC<{ course: Course; onClose: () => void }> = ({ course, onClose }) => {
+    const userName = "Rans Alfred"; // In real app, get from context/auth
+    const date = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+
+    const handleDownload = () => {
+        alert("Sertifikat sedang diunduh dalam format PDF...");
+    };
+
+    return (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
+            <div className="bg-white text-gray-900 w-full max-w-3xl rounded-xl shadow-2xl overflow-hidden relative animate-fade-in-up">
+                {/* Certificate Border & Background */}
+                <div className="p-2 h-full bg-white">
+                    <div className="h-full border-[10px] border-double border-[#bf9b30] p-8 relative flex flex-col items-center text-center bg-[url('https://www.transparenttextures.com/patterns/cream-paper.png')]">
+                        
+                        {/* Corner Ornaments (CSS Shapes) */}
+                        <div className="absolute top-0 left-0 w-16 h-16 border-t-4 border-l-4 border-[#bf9b30]"></div>
+                        <div className="absolute top-0 right-0 w-16 h-16 border-t-4 border-r-4 border-[#bf9b30]"></div>
+                        <div className="absolute bottom-0 left-0 w-16 h-16 border-b-4 border-l-4 border-[#bf9b30]"></div>
+                        <div className="absolute bottom-0 right-0 w-16 h-16 border-b-4 border-r-4 border-[#bf9b30]"></div>
+
+                        {/* Header */}
+                        <div className="mb-8">
+                            <div className="flex items-center justify-center gap-2 mb-2 opacity-80">
+                                <Activity className="w-8 h-8 text-[#bf9b30]" />
+                                <span className="text-sm font-bold tracking-widest uppercase text-gray-500">SIMAS Health System</span>
+                            </div>
+                            <h1 className="text-4xl md:text-5xl font-serif font-bold text-[#bf9b30] mb-2 tracking-wide">SERTIFIKAT</h1>
+                            <span className="text-sm md:text-base font-medium tracking-[0.3em] uppercase text-gray-400">Kelulusan Kompetensi</span>
+                        </div>
+
+                        {/* Body */}
+                        <div className="space-y-6 mb-12 w-full max-w-lg">
+                            <p className="text-gray-500 italic">Diberikan sebagai apresiasi kepada:</p>
+                            <h2 className="text-3xl md:text-4xl font-bold font-serif text-gray-800 border-b-2 border-gray-200 pb-4">{userName}</h2>
+                            <p className="text-gray-500">Telah berhasil menyelesaikan materi dan lulus kuis pada topik:</p>
+                            <h3 className="text-xl md:text-2xl font-bold text-[#bf9b30]">{course.title}</h3>
+                        </div>
+
+                        {/* Footer / Signatures */}
+                        <div className="flex justify-between w-full max-w-2xl mt-auto pt-8">
+                            <div className="text-center">
+                                <p className="font-serif text-lg font-bold text-gray-800">{date}</p>
+                                <div className="h-0.5 w-32 bg-gray-300 mx-auto my-2"></div>
+                                <p className="text-xs text-gray-500 uppercase tracking-wider">Tanggal</p>
+                            </div>
+                            <div className="hidden md:block">
+                                <Award className="w-20 h-20 text-[#bf9b30] opacity-20" />
+                            </div>
+                            <div className="text-center">
+                                <div className="font-dancing text-2xl text-gray-800 font-bold italic mb-1">Khoirul Anam</div>
+                                <div className="h-0.5 w-32 bg-gray-300 mx-auto my-2"></div>
+                                <p className="text-xs text-gray-500 uppercase tracking-wider">Kepala Program</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Action Bar */}
+                <div className="bg-gray-50 border-t border-gray-200 p-4 flex justify-between items-center">
+                    <button onClick={onClose} className="text-sm text-gray-500 hover:text-gray-800 font-medium">
+                        Tutup
+                    </button>
+                    <div className="flex gap-3">
+                        <Button variant="outline" className="text-xs" onClick={() => window.print()}>
+                            <Printer className="w-4 h-4 mr-2" /> Cetak
+                        </Button>
+                        <Button className="bg-[#bf9b30] hover:bg-[#a38426] text-white text-xs border-none" onClick={handleDownload}>
+                            <Download className="w-4 h-4 mr-2" /> Unduh PDF
+                        </Button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// --- Sub-Component: Share Modal/Dropdown ---
+const ShareOptions: React.FC<{ title: string; onClose: () => void }> = ({ title, onClose }) => {
+    const url = window.location.href;
+    const text = `Saya baru saja belajar "${title}" di aplikasi SIMAS. Yuk cek!`;
+
+    const handleShare = (platform: 'wa' | 'twitter' | 'fb' | 'copy') => {
+        let shareUrl = '';
+        switch(platform) {
+            case 'wa': shareUrl = `https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`; break;
+            case 'twitter': shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`; break;
+            case 'fb': shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`; break;
+            case 'copy': 
+                navigator.clipboard.writeText(`${text} ${url}`);
+                alert('Tautan berhasil disalin!');
+                onClose();
+                return;
+        }
+        window.open(shareUrl, '_blank');
+        onClose();
+    };
+
+    return (
+        <div className="absolute top-16 right-6 w-64 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-gray-100 dark:border-slate-700 z-30 p-2 animate-fade-in-up origin-top-right">
+            <div className="text-xs font-bold text-gray-500 dark:text-slate-400 px-3 py-2 uppercase tracking-wider">Bagikan Ke</div>
+            <button onClick={() => handleShare('wa')} className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-green-50 dark:hover:bg-green-900/20 text-gray-700 dark:text-slate-200 rounded-lg transition-colors text-sm font-medium">
+                <MessageCircle className="w-4 h-4 text-green-500" /> WhatsApp
+            </button>
+            <button onClick={() => handleShare('twitter')} className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-gray-700 dark:text-slate-200 rounded-lg transition-colors text-sm font-medium">
+                <Twitter className="w-4 h-4 text-blue-400" /> Twitter / X
+            </button>
+            <button onClick={() => handleShare('fb')} className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 text-gray-700 dark:text-slate-200 rounded-lg transition-colors text-sm font-medium">
+                <Facebook className="w-4 h-4 text-indigo-600" /> Facebook
+            </button>
+            <div className="h-px bg-gray-100 dark:bg-slate-700 my-1"></div>
+            <button onClick={() => handleShare('copy')} className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-gray-50 dark:hover:bg-slate-700 text-gray-700 dark:text-slate-200 rounded-lg transition-colors text-sm font-medium">
+                <LinkIcon className="w-4 h-4 text-gray-500" /> Salin Tautan
+            </button>
+        </div>
+    );
 };
 
 // --- Sub-Component: Quiz Modal ---
@@ -43,10 +163,10 @@ const QuizModal: React.FC<{ quiz: QuizQuestion[]; onClose: (passed: boolean) => 
                     ) : (
                         <div className="text-red-500 mb-4 flex justify-center"><XCircle className="w-16 h-16" /></div>
                     )}
-                    <h3 className="text-2xl font-bold mb-2">{passed ? 'Selamat! Lulus!' : 'Belum Lulus'}</h3>
+                    <h3 className="text-2xl font-bold mb-2 text-gray-900">{passed ? 'Selamat! Lulus!' : 'Belum Lulus'}</h3>
                     <p className="text-gray-600 mb-6">Skor Anda: {score} dari {quiz.length}</p>
                     <Button onClick={() => onClose(passed)} className="w-full">
-                        {passed ? 'Klaim Sertifikat' : 'Coba Lagi'}
+                        {passed ? 'Klaim Sertifikat & Poin' : 'Coba Lagi'}
                     </Button>
                 </div>
             </div>
@@ -162,6 +282,10 @@ const LessonPlayer: React.FC<{ course: Course; onBack: () => void }> = ({ course
     const [showQuiz, setShowQuiz] = useState(false);
     const [showAI, setShowAI] = useState(false);
     const [completed, setCompleted] = useState(course.completed || false);
+    
+    // New States
+    const [showCertificate, setShowCertificate] = useState(false);
+    const [showShare, setShowShare] = useState(false);
 
     const toggleDark = () => setIsDarkMode(!isDarkMode);
 
@@ -181,9 +305,18 @@ const LessonPlayer: React.FC<{ course: Course; onBack: () => void }> = ({ course
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
-                    <button onClick={() => setShowAI(!showAI)} className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${showAI ? 'bg-indigo-600 text-white border-indigo-600' : 'border-indigo-200 text-indigo-600 dark:border-indigo-400 dark:text-indigo-300'}`}>
+                    <button onClick={() => setShowAI(!showAI)} className={`hidden md:flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${showAI ? 'bg-indigo-600 text-white border-indigo-600' : 'border-indigo-200 text-indigo-600 dark:border-indigo-400 dark:text-indigo-300'}`}>
                         <Sparkles className="w-3 h-3" /> <span className="hidden sm:inline">Tanya AI</span>
                     </button>
+                    
+                    {/* Share Button */}
+                    <div className="relative">
+                        <button onClick={() => setShowShare(!showShare)} className={`p-2 rounded-full hover:bg-gray-500/10 ${showShare ? 'bg-gray-100 dark:bg-slate-800' : ''}`}>
+                            <Share2 className="w-5 h-5" />
+                        </button>
+                        {showShare && <ShareOptions title={course.title} onClose={() => setShowShare(false)} />}
+                    </div>
+
                     <button onClick={toggleDark} className="p-2 rounded-full hover:bg-gray-500/10">
                         {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
                     </button>
@@ -220,18 +353,32 @@ const LessonPlayer: React.FC<{ course: Course; onBack: () => void }> = ({ course
                 </article>
 
                 {/* Action Area */}
-                <div className={`mt-12 p-6 rounded-2xl ${isDarkMode ? 'bg-slate-900' : 'bg-green-50'} flex flex-col md:flex-row gap-6 justify-between items-center`}>
+                <div className={`mt-12 p-6 rounded-2xl ${isDarkMode ? 'bg-slate-900' : 'bg-green-50'} flex flex-col md:flex-row gap-6 justify-between items-center shadow-sm border border-gray-100 dark:border-slate-800`}>
                     <div>
-                        <h4 className="font-bold text-lg mb-1">Sudah paham materinya?</h4>
+                        <h4 className="font-bold text-lg mb-1 flex items-center gap-2">
+                            {completed ? <CheckCircle className="text-green-600 w-5 h-5" /> : null}
+                            {completed ? 'Materi Selesai!' : 'Sudah paham materinya?'}
+                        </h4>
                         <p className="text-sm opacity-80">
-                            Selesaikan kuis singkat untuk mendapatkan sertifikat digital dan <strong>+{course.points} Poin</strong>.
+                            {completed 
+                                ? 'Selamat! Anda telah menguasai materi ini. Sertifikat Anda siap.'
+                                : `Selesaikan kuis singkat untuk mendapatkan sertifikat digital dan +${course.points} Poin.`
+                            }
                         </p>
                     </div>
                     <Button 
-                        onClick={() => setShowQuiz(true)} 
-                        className={`w-full md:w-auto px-8 py-3 ${completed ? 'bg-green-600 hover:bg-green-700' : 'bg-primary-600 hover:bg-primary-700'}`}
+                        onClick={() => completed ? setShowCertificate(true) : setShowQuiz(true)} 
+                        className={`w-full md:w-auto px-8 py-3 shadow-lg ${
+                            completed 
+                            ? 'bg-yellow-500 hover:bg-yellow-600 text-white' 
+                            : 'bg-primary-600 hover:bg-primary-700'
+                        }`}
                     >
-                        {completed ? 'Lihat Sertifikat Anda' : 'Mulai Kuis Sekarang'}
+                        {completed ? (
+                            <span className="flex items-center gap-2"><Award className="w-5 h-5" /> Lihat Sertifikat</span>
+                        ) : (
+                            'Mulai Kuis Sekarang'
+                        )}
                     </Button>
                 </div>
             </div>
@@ -241,9 +388,17 @@ const LessonPlayer: React.FC<{ course: Course; onBack: () => void }> = ({ course
                     quiz={course.quiz} 
                     onClose={(passed) => {
                         setShowQuiz(false);
-                        if (passed) setCompleted(true);
+                        if (passed) {
+                            setCompleted(true);
+                            // Auto open certificate after passing? Optional.
+                            // setShowCertificate(true); 
+                        }
                     }} 
                 />
+            )}
+
+            {showCertificate && (
+                <CertificateModal course={course} onClose={() => setShowCertificate(false)} />
             )}
 
             {showAI && <AIContextHelper context={course.content.replace(/<[^>]*>?/gm, '')} onClose={() => setShowAI(false)} />}

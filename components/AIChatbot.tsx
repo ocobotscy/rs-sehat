@@ -145,7 +145,7 @@ const AIChatbot: React.FC = () => {
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                 placeholder="Ketik pertanyaan kesehatan..."
-                className="flex-1 px-4 py-2 bg-gray-100 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="flex-1 px-4 py-2 bg-gray-100 text-gray-900 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
               />
               <button
                 onClick={handleSend}
