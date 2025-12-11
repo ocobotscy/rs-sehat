@@ -6,9 +6,8 @@ import Education from './pages/Education';
 import Research from './pages/Research';
 import Policy from './pages/Policy';
 import Quality from './pages/Quality';
+import Profile from './pages/Profile';
 import AIChatbot from './components/AIChatbot';
-
-const Profile = () => <div className="p-8 text-center text-gray-500">Modul Profil Pengguna (Under Development)</div>;
 
 const App: React.FC = () => {
   return (

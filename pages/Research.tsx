@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, Button, Badge } from '../components/UI';
 import { 
@@ -14,6 +13,23 @@ import {
 } from 'lucide-react';
 import { streamGeminiResponse } from '../services/geminiService';
 import { BotMode, Survey, ResearchPaper } from '../types';
+
+// Custom Tooltip for Dark Mode
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-white dark:bg-slate-800 p-3 border border-gray-100 dark:border-slate-700 rounded-lg shadow-lg">
+        {label && <p className="text-sm font-bold text-gray-800 dark:text-white mb-2">{label}</p>}
+        {payload.map((entry: any, index: number) => (
+          <p key={index} className="text-xs" style={{ color: entry.color }}>
+            {entry.name}: <span className="font-bold">{entry.value}</span>
+          </p>
+        ))}
+      </div>
+    );
+  }
+  return null;
+};
 
 // --- Sub-Component: AI Insight Generator ---
 const AIInsightCard: React.FC = () => {
@@ -41,7 +57,7 @@ const AIInsightCard: React.FC = () => {
     };
 
     return (
-        <Card className="bg-gradient-to-r from-violet-500 to-fuchsia-600 text-white border-none relative overflow-hidden">
+        <Card className="bg-gradient-to-r from-violet-500 to-fuchsia-600 dark:from-violet-600 dark:to-fuchsia-700 text-white border-none relative overflow-hidden">
             <div className="relative z-10 p-2">
                 <div className="flex items-center gap-2 mb-3">
                     <Sparkles className="w-5 h-5 text-yellow-300 animate-pulse" />
@@ -69,7 +85,7 @@ const AIInsightCard: React.FC = () => {
                 )}
 
                 {insight && (
-                    <div className="bg-white/10 rounded-xl p-4 text-sm leading-relaxed backdrop-blur-sm animate-fade-in">
+                    <div className="bg-white/10 rounded-xl p-4 text-sm leading-relaxed backdrop-blur-sm animate-fade-in border border-white/10">
                         <div dangerouslySetInnerHTML={{ __html: insight.replace(/\n/g, '<br/>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />
                         <button onClick={generateInsight} className="mt-3 text-xs text-violet-200 hover:text-white underline">
                             Refresh Analisis
@@ -110,16 +126,16 @@ const SurveyTaker: React.FC<{ survey: Survey; onClose: () => void }> = ({ survey
 
     if (isDone) {
         return (
-            <div className="fixed inset-0 bg-white z-50 flex flex-col items-center justify-center p-6 animate-fade-in">
-                <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mb-6 animate-bounce">
-                    <CheckCircle className="w-12 h-12 text-green-600" />
+            <div className="fixed inset-0 bg-white dark:bg-slate-900 z-50 flex flex-col items-center justify-center p-6 animate-fade-in">
+                <div className="w-24 h-24 bg-green-100 dark:bg-green-500/20 rounded-full flex items-center justify-center mb-6 animate-bounce">
+                    <CheckCircle className="w-12 h-12 text-green-600 dark:text-green-400" />
                 </div>
-                <h2 className="text-2xl font-bold text-gray-800 text-center">Terima Kasih!</h2>
-                <p className="text-gray-500 text-center mb-8 max-w-md">
+                <h2 className="text-2xl font-bold text-gray-800 dark:text-white text-center">Terima Kasih!</h2>
+                <p className="text-gray-500 dark:text-slate-400 text-center mb-8 max-w-md">
                     Anda telah menyelesaikan survei <strong>"{survey.title}"</strong>.
                     <br/>Poin reward telah ditambahkan ke akun Anda.
                 </p>
-                <div className="flex items-center gap-2 bg-yellow-50 text-yellow-700 px-6 py-3 rounded-xl border border-yellow-200 mb-8 font-bold">
+                <div className="flex items-center gap-2 bg-yellow-50 dark:bg-yellow-500/10 text-yellow-700 dark:text-yellow-400 px-6 py-3 rounded-xl border border-yellow-200 dark:border-yellow-500/30 mb-8 font-bold">
                     <Gift className="w-5 h-5" />
                     +{survey.points} Poin Diterima
                 </div>
@@ -129,13 +145,13 @@ const SurveyTaker: React.FC<{ survey: Survey; onClose: () => void }> = ({ survey
     }
 
     return (
-        <div className="fixed inset-0 bg-gray-50 z-50 flex flex-col">
-            <div className="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center shadow-sm">
+        <div className="fixed inset-0 bg-gray-50 dark:bg-slate-950 z-50 flex flex-col">
+            <div className="bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 px-6 py-4 flex justify-between items-center shadow-sm">
                 <div>
-                    <h3 className="font-bold text-gray-800">{survey.title}</h3>
-                    <p className="text-xs text-gray-500">Pertanyaan {step + 1} dari {questions.length}</p>
+                    <h3 className="font-bold text-gray-800 dark:text-white">{survey.title}</h3>
+                    <p className="text-xs text-gray-500 dark:text-slate-400">Pertanyaan {step + 1} dari {questions.length}</p>
                 </div>
-                <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full"><XCircle className="w-6 h-6 text-gray-400" /></button>
+                <button onClick={onClose} className="p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full"><XCircle className="w-6 h-6 text-gray-400" /></button>
             </div>
             
             <div className="flex-1 flex items-center justify-center p-6">
@@ -143,17 +159,17 @@ const SurveyTaker: React.FC<{ survey: Survey; onClose: () => void }> = ({ survey
                     {isSubmitting ? (
                         <div className="text-center">
                             <div className="w-12 h-12 border-4 border-primary-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                            <p className="text-gray-600">Mengirim jawaban...</p>
+                            <p className="text-gray-600 dark:text-slate-300">Mengirim jawaban...</p>
                         </div>
                     ) : (
                         <Card className="p-8">
-                            <h4 className="text-xl font-medium text-gray-800 mb-8 text-center leading-relaxed">{questions[step]}</h4>
+                            <h4 className="text-xl font-medium text-gray-800 dark:text-slate-100 mb-8 text-center leading-relaxed">{questions[step]}</h4>
                             <div className="space-y-3">
                                 {['Sangat Sering / Ya', 'Kadang-kadang', 'Jarang', 'Tidak Pernah'].map((opt, i) => (
                                     <button 
                                         key={i} 
                                         onClick={handleNext}
-                                        className="w-full text-left p-4 rounded-xl border border-gray-200 hover:bg-primary-50 hover:border-primary-500 transition-all font-medium text-gray-600 hover:text-primary-700"
+                                        className="w-full text-left p-4 rounded-xl border border-gray-200 dark:border-slate-600 hover:bg-primary-50 dark:hover:bg-primary-500/10 hover:border-primary-500 dark:hover:border-primary-400 transition-all font-medium text-gray-600 dark:text-slate-300 hover:text-primary-700 dark:hover:text-primary-300"
                                     >
                                         {opt}
                                     </button>
@@ -164,8 +180,8 @@ const SurveyTaker: React.FC<{ survey: Survey; onClose: () => void }> = ({ survey
                 </div>
             </div>
             
-            <div className="bg-white p-4 border-t border-gray-200">
-                <div className="w-full bg-gray-100 rounded-full h-2 max-w-md mx-auto">
+            <div className="bg-white dark:bg-slate-900 p-4 border-t border-gray-200 dark:border-slate-800">
+                <div className="w-full bg-gray-100 dark:bg-slate-700 rounded-full h-2 max-w-md mx-auto">
                     <div className="bg-primary-500 h-2 rounded-full transition-all duration-300" style={{ width: `${((step + 1) / questions.length) * 100}%` }}></div>
                 </div>
             </div>
@@ -190,14 +206,14 @@ const PaperReader: React.FC<{ paper: ResearchPaper; onClose: () => void }> = ({ 
     };
 
     return (
-        <div className="fixed inset-0 bg-white z-50 overflow-y-auto animate-fade-in flex flex-col">
-            <div className="sticky top-0 bg-white/95 backdrop-blur border-b border-gray-200 px-6 py-4 flex justify-between items-center z-10">
+        <div className="fixed inset-0 bg-white dark:bg-slate-950 z-50 overflow-y-auto animate-fade-in flex flex-col">
+            <div className="sticky top-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur border-b border-gray-200 dark:border-slate-800 px-6 py-4 flex justify-between items-center z-10">
                 <div className="flex items-center gap-4">
-                    <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors flex items-center gap-1 text-gray-600 font-medium">
+                    <button onClick={onClose} className="p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-colors flex items-center gap-1 text-gray-600 dark:text-slate-300 font-medium">
                         <ChevronLeft className="w-5 h-5" /> Kembali
                     </button>
                     <div className="hidden md:block">
-                        <h3 className="font-bold text-gray-800 line-clamp-1 max-w-md">{paper.title}</h3>
+                        <h3 className="font-bold text-gray-800 dark:text-white line-clamp-1 max-w-md">{paper.title}</h3>
                     </div>
                 </div>
                 <div className="flex gap-2">
@@ -208,10 +224,10 @@ const PaperReader: React.FC<{ paper: ResearchPaper; onClose: () => void }> = ({ 
             </div>
 
             <div className="max-w-3xl mx-auto w-full p-8 md:p-12 pb-32">
-                <div className="mb-8 border-b border-gray-100 pb-8">
+                <div className="mb-8 border-b border-gray-100 dark:border-slate-800 pb-8">
                     <Badge color="blue">{paper.category}</Badge>
-                    <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mt-4 mb-4 leading-tight">{paper.title}</h1>
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-4 text-sm text-gray-500">
+                    <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mt-4 mb-4 leading-tight">{paper.title}</h1>
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-4 text-sm text-gray-500 dark:text-slate-400">
                         <div className="flex items-center gap-2">
                             <Users className="w-4 h-4" />
                             <span>{paper.author}</span>
@@ -223,12 +239,12 @@ const PaperReader: React.FC<{ paper: ResearchPaper; onClose: () => void }> = ({ 
                     </div>
                 </div>
 
-                <div className="bg-blue-50 p-6 rounded-xl border border-blue-100 mb-8">
-                    <h4 className="font-bold text-blue-800 mb-2 text-sm uppercase tracking-wide">Ringkasan Eksekutif</h4>
-                    <p className="text-blue-900 leading-relaxed">{paper.summary}</p>
+                <div className="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-xl border border-blue-100 dark:border-blue-800 mb-8">
+                    <h4 className="font-bold text-blue-800 dark:text-blue-300 mb-2 text-sm uppercase tracking-wide">Ringkasan Eksekutif</h4>
+                    <p className="text-blue-900 dark:text-blue-100 leading-relaxed">{paper.summary}</p>
                 </div>
 
-                <div className="prose prose-blue max-w-none text-gray-700">
+                <div className="prose prose-blue dark:prose-invert max-w-none text-gray-700 dark:text-slate-300">
                     <div dangerouslySetInnerHTML={{ __html: paper.content || '<p>Konten lengkap sedang dimuat...</p>' }} />
                 </div>
             </div>
@@ -240,25 +256,25 @@ const PaperReader: React.FC<{ paper: ResearchPaper; onClose: () => void }> = ({ 
 const RedeemModal: React.FC<{ onClose: () => void, points: number }> = ({ onClose, points }) => {
     return (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 animate-fade-in">
-            <div className="bg-white rounded-2xl w-full max-w-md overflow-hidden animate-fade-in-up">
-                <div className="bg-primary-600 p-6 text-white text-center">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl w-full max-w-md overflow-hidden animate-fade-in-up">
+                <div className="bg-primary-600 dark:bg-primary-700 p-6 text-white text-center">
                     <Gift className="w-12 h-12 mx-auto mb-2 opacity-90" />
                     <h3 className="text-xl font-bold">Tukar Poin Riset</h3>
                     <p className="text-primary-100 text-sm">Saldo Anda: <span className="font-bold text-white">{points} Poin</span></p>
                 </div>
-                <div className="p-6 space-y-4 max-h-[60vh] overflow-y-auto">
+                <div className="p-6 space-y-4 max-h-[60vh] overflow-y-auto custom-scrollbar">
                     {[
                         { title: 'Voucher Vitamin Rp50rb', cost: 200, icon: '💊' },
                         { title: 'Konsultasi Dokter Gratis', cost: 350, icon: '👨‍⚕️' },
                         { title: 'Saldo E-Wallet Rp20rb', cost: 400, icon: '💳' },
                         { title: 'Paket Data Internet 2GB', cost: 150, icon: '📱' },
                     ].map((item, i) => (
-                        <div key={i} className="flex items-center justify-between p-4 border border-gray-100 rounded-xl hover:border-primary-200 hover:bg-primary-50 transition-all cursor-pointer group">
+                        <div key={i} className="flex items-center justify-between p-4 border border-gray-100 dark:border-slate-700 rounded-xl hover:border-primary-200 dark:hover:border-primary-500 hover:bg-primary-50 dark:hover:bg-primary-500/10 transition-all cursor-pointer group">
                             <div className="flex items-center gap-3">
                                 <span className="text-2xl">{item.icon}</span>
                                 <div>
-                                    <h4 className="font-bold text-gray-800 text-sm">{item.title}</h4>
-                                    <span className="text-xs text-primary-600 font-bold">{item.cost} Poin</span>
+                                    <h4 className="font-bold text-gray-800 dark:text-white text-sm">{item.title}</h4>
+                                    <span className="text-xs text-primary-600 dark:text-primary-400 font-bold">{item.cost} Poin</span>
                                 </div>
                             </div>
                             <Button 
@@ -272,8 +288,8 @@ const RedeemModal: React.FC<{ onClose: () => void, points: number }> = ({ onClos
                         </div>
                     ))}
                 </div>
-                <div className="p-4 border-t border-gray-100 bg-gray-50 text-center">
-                    <button onClick={onClose} className="text-gray-500 font-medium hover:text-gray-800">Tutup</button>
+                <div className="p-4 border-t border-gray-100 dark:border-slate-700 bg-gray-50 dark:bg-slate-900/50 text-center">
+                    <button onClick={onClose} className="text-gray-500 dark:text-slate-400 font-medium hover:text-gray-800 dark:hover:text-white">Tutup</button>
                 </div>
             </div>
         </div>
@@ -308,13 +324,13 @@ const Research: React.FC = () => {
       {/* Header & Tabs */}
       <div className="flex flex-col md:flex-row justify-between items-end gap-4">
         <div>
-            <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-                <FlaskConicalIcon className="w-6 h-6 text-primary-600" />
+            <h2 className="text-2xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
+                <FlaskConicalIcon className="w-6 h-6 text-primary-600 dark:text-primary-400" />
                 Penelitian & Informatika Medik
             </h2>
-            <p className="text-gray-500 text-sm mt-1">Platform partisipasi masyarakat dalam riset kesehatan berbasis data.</p>
+            <p className="text-gray-500 dark:text-slate-400 text-sm mt-1">Platform partisipasi masyarakat dalam riset kesehatan berbasis data.</p>
         </div>
-        <div className="flex bg-white p-1 rounded-lg border border-gray-200 shadow-sm">
+        <div className="flex bg-white dark:bg-slate-800 p-1 rounded-lg border border-gray-200 dark:border-slate-700 shadow-sm">
             {[
                 { id: 'dashboard', label: 'Dashboard Data', icon: Activity },
                 { id: 'surveys', label: 'Pusat Survei', icon: ClipboardCheck },
@@ -325,8 +341,8 @@ const Research: React.FC = () => {
                     onClick={() => setActiveTab(tab.id as any)}
                     className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
                         activeTab === tab.id 
-                        ? 'bg-primary-100 text-primary-700 shadow-sm' 
-                        : 'text-gray-500 hover:bg-gray-50'
+                        ? 'bg-primary-100 dark:bg-primary-500/20 text-primary-700 dark:text-primary-300 shadow-sm' 
+                        : 'text-gray-500 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-700'
                     }`}
                 >
                     <tab.icon className="w-4 h-4" />
@@ -346,21 +362,21 @@ const Research: React.FC = () => {
 
             {/* Top Metrics */}
             <div className="lg:col-span-2 grid grid-cols-2 gap-4">
-                <Card className="flex items-center justify-between p-4 bg-blue-50 border-blue-100">
+                <Card className="flex items-center justify-between p-4 bg-blue-50 dark:bg-blue-500/10 border-blue-100 dark:border-blue-800">
                     <div>
-                        <p className="text-sm text-blue-600 font-medium">Partisipan Riset</p>
-                        <h4 className="text-2xl font-bold text-gray-900">12,540</h4>
-                        <span className="text-xs text-blue-500">+12% bulan ini</span>
+                        <p className="text-sm text-blue-600 dark:text-blue-300 font-medium">Partisipan Riset</p>
+                        <h4 className="text-2xl font-bold text-gray-900 dark:text-white">12,540</h4>
+                        <span className="text-xs text-blue-500 dark:text-blue-400">+12% bulan ini</span>
                     </div>
-                    <Users className="w-8 h-8 text-blue-300" />
+                    <Users className="w-8 h-8 text-blue-300 dark:text-blue-500/50" />
                 </Card>
-                <Card className="flex items-center justify-between p-4 bg-emerald-50 border-emerald-100">
+                <Card className="flex items-center justify-between p-4 bg-emerald-50 dark:bg-emerald-500/10 border-emerald-100 dark:border-emerald-800">
                     <div>
-                        <p className="text-sm text-emerald-600 font-medium">Survei Selesai</p>
-                        <h4 className="text-2xl font-bold text-gray-900">85</h4>
-                        <span className="text-xs text-emerald-500">Total Program</span>
+                        <p className="text-sm text-emerald-600 dark:text-emerald-300 font-medium">Survei Selesai</p>
+                        <h4 className="text-2xl font-bold text-gray-900 dark:text-white">85</h4>
+                        <span className="text-xs text-emerald-500 dark:text-emerald-400">Total Program</span>
                     </div>
-                    <ClipboardCheck className="w-8 h-8 text-emerald-300" />
+                    <ClipboardCheck className="w-8 h-8 text-emerald-300 dark:text-emerald-500/50" />
                 </Card>
             </div>
 
@@ -369,11 +385,11 @@ const Research: React.FC = () => {
                 <div className="h-80 w-full mt-2">
                     <ResponsiveContainer width="100%" height="100%">
                         <LineChart data={DISEASE_TREND_DATA}>
-                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
-                            <XAxis dataKey="name" tick={{fontSize: 12}} />
-                            <YAxis tick={{fontSize: 12}} />
-                            <Tooltip contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)'}} />
-                            <Legend />
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" strokeOpacity={0.2} />
+                            <XAxis dataKey="name" tick={{fontSize: 12, fill: '#94a3b8'}} />
+                            <YAxis tick={{fontSize: 12, fill: '#94a3b8'}} />
+                            <Tooltip content={<CustomTooltip />} />
+                            <Legend wrapperStyle={{paddingTop: '10px'}} />
                             <Line type="monotone" dataKey="ISPA" stroke="#3b82f6" strokeWidth={2} dot={false} activeDot={{r: 6}} />
                             <Line type="monotone" dataKey="Diabetes" stroke="#10b981" strokeWidth={2} dot={false} />
                             <Line type="monotone" dataKey="Diare" stroke="#f59e0b" strokeWidth={2} dot={false} />
@@ -400,13 +416,13 @@ const Research: React.FC = () => {
                                         <Cell key={`cell-${index}`} fill={entry.color} />
                                     ))}
                                 </Pie>
-                                <Tooltip />
+                                <Tooltip content={<CustomTooltip />} />
                                 <Legend verticalAlign="bottom" height={36}/>
                             </PieChart>
                         </ResponsiveContainer>
                         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none mb-8">
-                            <span className="text-2xl font-bold text-gray-800">65%</span>
-                            <span className="text-xs text-gray-500">Lengkap</span>
+                            <span className="text-2xl font-bold text-gray-800 dark:text-white">65%</span>
+                            <span className="text-xs text-gray-500 dark:text-slate-400">Lengkap</span>
                         </div>
                     </div>
                 </Card>
@@ -416,8 +432,8 @@ const Research: React.FC = () => {
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={DEMOGRAPHIC_DATA} layout="vertical">
                                 <XAxis type="number" hide />
-                                <YAxis dataKey="age" type="category" width={40} tick={{fontSize: 10}} />
-                                <Tooltip cursor={{fill: 'transparent'}} />
+                                <YAxis dataKey="age" type="category" width={40} tick={{fontSize: 10, fill: '#94a3b8'}} />
+                                <Tooltip content={<CustomTooltip />} cursor={{fill: 'transparent'}} />
                                 <Bar dataKey="participants" fill="#6366f1" radius={[0, 4, 4, 0]} barSize={20} />
                             </BarChart>
                         </ResponsiveContainer>
@@ -430,36 +446,36 @@ const Research: React.FC = () => {
       {/* --- TAB 2: SURVEI --- */}
       {activeTab === 'surveys' && (
         <div className="space-y-6 animate-fade-in-up">
-            <div className="bg-primary-50 border border-primary-200 rounded-xl p-6 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div className="bg-primary-50 dark:bg-primary-500/10 border border-primary-200 dark:border-primary-500/30 rounded-xl p-6 flex flex-col md:flex-row justify-between items-center gap-4">
                 <div className="flex items-center gap-4">
-                    <div className="bg-primary-100 p-3 rounded-full">
-                        <TrendingUp className="w-8 h-8 text-primary-600" />
+                    <div className="bg-primary-100 dark:bg-primary-500/20 p-3 rounded-full">
+                        <TrendingUp className="w-8 h-8 text-primary-600 dark:text-primary-400" />
                     </div>
                     <div>
-                        <h3 className="text-lg font-bold text-gray-800">Program Loyalitas Riset</h3>
-                        <p className="text-sm text-gray-600">Anda memiliki <span className="font-bold text-primary-600">450 Poin Riset</span>. Tukarkan dengan voucher kesehatan.</p>
+                        <h3 className="text-lg font-bold text-gray-800 dark:text-white">Program Loyalitas Riset</h3>
+                        <p className="text-sm text-gray-600 dark:text-slate-400">Anda memiliki <span className="font-bold text-primary-600 dark:text-primary-400">450 Poin Riset</span>. Tukarkan dengan voucher kesehatan.</p>
                     </div>
                 </div>
                 <Button variant="primary" onClick={() => setShowRedeem(true)}>Tukar Poin</Button>
             </div>
 
-            <h3 className="font-bold text-lg text-gray-800 mt-6">Survei Tersedia</h3>
+            <h3 className="font-bold text-lg text-gray-800 dark:text-white mt-6">Survei Tersedia</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {SURVEY_LIST.map((survey) => (
-                    <Card key={survey.id} className="hover:border-primary-300 transition-all cursor-pointer group flex flex-col justify-between">
+                    <Card key={survey.id} className="hover:border-primary-300 dark:hover:border-primary-500/50 transition-all cursor-pointer group flex flex-col justify-between">
                         <div>
                             <div className="flex justify-between items-start mb-2">
                                 <Badge color={survey.status === 'active' ? 'green' : survey.status === 'completed' ? 'blue' : 'yellow'}>
                                     {survey.status.toUpperCase()}
                                 </Badge>
-                                <span className="text-xs font-bold text-yellow-600 flex items-center gap-1">
+                                <span className="text-xs font-bold text-yellow-600 dark:text-yellow-400 flex items-center gap-1">
                                     <Sparkles className="w-3 h-3" /> +{survey.points} Poin
                                 </span>
                             </div>
-                            <h4 className="font-bold text-gray-900 group-hover:text-primary-600 transition-colors">{survey.title}</h4>
-                            <p className="text-sm text-gray-500 mt-1 line-clamp-2">{survey.description}</p>
+                            <h4 className="font-bold text-gray-900 dark:text-slate-100 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">{survey.title}</h4>
+                            <p className="text-sm text-gray-500 dark:text-slate-400 mt-1 line-clamp-2">{survey.description}</p>
                             
-                            <div className="mt-4 pt-4 border-t border-gray-50 flex items-center justify-between text-xs text-gray-500">
+                            <div className="mt-4 pt-4 border-t border-gray-50 dark:border-slate-700 flex items-center justify-between text-xs text-gray-500 dark:text-slate-400">
                                 <div className="flex gap-3">
                                     <span className="flex items-center gap-1"><Brain className="w-3 h-3" /> {survey.category}</span>
                                     <span className="flex items-center gap-1"><Activity className="w-3 h-3" /> {survey.estimatedTime}</span>
@@ -472,10 +488,10 @@ const Research: React.FC = () => {
 
                         {survey.status === 'active' && (
                             <div className="mt-3">
-                                <div className="w-full bg-gray-100 rounded-full h-1.5 mb-1">
+                                <div className="w-full bg-gray-100 dark:bg-slate-700 rounded-full h-1.5 mb-1">
                                     <div className="bg-primary-500 h-1.5 rounded-full" style={{width: `${survey.progress || 0}%`}}></div>
                                 </div>
-                                <div className="text-[10px] text-right text-gray-400">Progress: {survey.progress}%</div>
+                                <div className="text-[10px] text-right text-gray-400 dark:text-slate-500">Progress: {survey.progress}%</div>
                             </div>
                         )}
                         
@@ -504,7 +520,7 @@ const Research: React.FC = () => {
                     <input 
                         type="text" 
                         placeholder="Cari jurnal, topik, atau penulis..." 
-                        className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                        className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
                     />
                 </div>
                 <Button variant="outline" className="hidden sm:flex">Filter</Button>
@@ -516,22 +532,22 @@ const Research: React.FC = () => {
                         <div className="flex flex-col md:flex-row gap-6">
                             <div className="flex-1">
                                 <div className="flex items-center gap-2 mb-2">
-                                    <span className="text-[10px] font-bold uppercase tracking-wider text-primary-600 bg-primary-50 px-2 py-1 rounded">
+                                    <span className="text-[10px] font-bold uppercase tracking-wider text-primary-600 dark:text-primary-300 bg-primary-50 dark:bg-primary-500/10 px-2 py-1 rounded">
                                         {paper.category}
                                     </span>
                                     <span className="text-xs text-gray-400">• {paper.date}</span>
                                 </div>
-                                <h3 className="text-lg font-bold text-gray-900 mb-2">{paper.title}</h3>
-                                <p className="text-sm text-gray-600 mb-4 leading-relaxed bg-gray-50 p-3 rounded-lg border-l-4 border-primary-300">
-                                    <span className="font-bold text-gray-700 block mb-1">Ringkasan:</span>
+                                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">{paper.title}</h3>
+                                <p className="text-sm text-gray-600 dark:text-slate-300 mb-4 leading-relaxed bg-gray-50 dark:bg-slate-900/50 p-3 rounded-lg border-l-4 border-primary-300 dark:border-primary-700">
+                                    <span className="font-bold text-gray-700 dark:text-slate-200 block mb-1">Ringkasan:</span>
                                     {paper.summary}
                                 </p>
-                                <div className="flex items-center gap-4 text-xs text-gray-500">
+                                <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-slate-400">
                                     <span className="flex items-center gap-1"><Users className="w-3 h-3" /> Penulis: {paper.author}</span>
                                     <span className="flex items-center gap-1"><BookOpen className="w-3 h-3" /> Dibaca: {paper.readCount} kali</span>
                                 </div>
                             </div>
-                            <div className="flex flex-row md:flex-col gap-2 justify-center border-t md:border-t-0 md:border-l border-gray-100 pt-4 md:pt-0 md:pl-6 min-w-[140px]">
+                            <div className="flex flex-row md:flex-col gap-2 justify-center border-t md:border-t-0 md:border-l border-gray-100 dark:border-slate-700 pt-4 md:pt-0 md:pl-6 min-w-[140px]">
                                 <Button className="text-xs w-full" onClick={() => handleReadPaper(paper)}>
                                     <FileText className="w-3 h-3 mr-1" /> Baca Detail
                                 </Button>

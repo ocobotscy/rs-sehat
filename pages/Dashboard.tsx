@@ -6,19 +6,35 @@ import { DISEASE_TREND_DATA } from '../services/mockData';
 
 const StatBox: React.FC<{ title: string; value: string; trend: string; isUp: boolean; icon: React.ElementType }> = ({ title, value, trend, isUp, icon: Icon }) => (
   <Card className="flex items-center p-4">
-    <div className={`p-3 rounded-full mr-4 ${isUp ? 'bg-primary-50 text-primary-600' : 'bg-red-50 text-red-600'}`}>
+    <div className={`p-3 rounded-full mr-4 ${isUp ? 'bg-primary-50 dark:bg-emerald-500/10 text-primary-600 dark:text-emerald-400' : 'bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400'}`}>
       <Icon className="w-6 h-6" />
     </div>
     <div>
-      <p className="text-sm text-gray-500 font-medium">{title}</p>
-      <h4 className="text-2xl font-bold text-gray-900 mt-1">{value}</h4>
-      <div className={`flex items-center text-xs mt-1 ${isUp ? 'text-green-600' : 'text-red-600'}`}>
+      <p className="text-sm text-gray-500 dark:text-slate-400 font-medium">{title}</p>
+      <h4 className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{value}</h4>
+      <div className={`flex items-center text-xs mt-1 ${isUp ? 'text-green-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
         {isUp ? <ArrowUpRight className="w-3 h-3 mr-1" /> : <ArrowDownRight className="w-3 h-3 mr-1" />}
         {trend} dari bulan lalu
       </div>
     </div>
   </Card>
 );
+
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-white dark:bg-slate-800 p-3 border border-gray-100 dark:border-slate-700 rounded-lg shadow-lg">
+        <p className="text-sm font-bold text-gray-800 dark:text-white mb-2">{label}</p>
+        {payload.map((entry: any, index: number) => (
+          <p key={index} className="text-xs" style={{ color: entry.color }}>
+            {entry.name}: <span className="font-bold">{entry.value}</span>
+          </p>
+        ))}
+      </div>
+    );
+  }
+  return null;
+};
 
 const Dashboard: React.FC = () => {
   return (
@@ -42,12 +58,10 @@ const Dashboard: React.FC = () => {
                     <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f3f4f6" />
-                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#9ca3af', fontSize: 12}} />
-                <YAxis axisLine={false} tickLine={false} tick={{fill: '#9ca3af', fontSize: 12}} />
-                <Tooltip 
-                    contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'}} 
-                />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" strokeOpacity={0.2} />
+                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12}} />
+                <YAxis axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12}} />
+                <Tooltip content={<CustomTooltip />} />
                 <Area type="monotone" dataKey="ISPA" stroke="#10b981" fillOpacity={1} fill="url(#colorISPA)" strokeWidth={2} />
                 <Area type="monotone" dataKey="Diabetes" stroke="#6366f1" fillOpacity={0} strokeWidth={2} />
               </AreaChart>
@@ -63,14 +77,14 @@ const Dashboard: React.FC = () => {
               { text: 'Mengisi survei "Kesehatan Lingkungan"', time: '1 hari lalu', type: 'survey' },
               { text: 'Laporan keluhan #C002 diselesaikan', time: '2 hari lalu', type: 'report' },
             ].map((item, idx) => (
-              <div key={idx} className="flex gap-4">
+              <div key={idx} className="flex gap-4 group">
                 <div className="flex-col items-center hidden sm:flex">
-                  <div className="w-2 h-2 rounded-full bg-primary-300"></div>
-                  {idx !== 2 && <div className="w-0.5 h-full bg-gray-100 my-1"></div>}
+                  <div className="w-2 h-2 rounded-full bg-primary-300 dark:bg-primary-600 group-hover:bg-primary-500 transition-colors"></div>
+                  {idx !== 2 && <div className="w-0.5 h-full bg-gray-100 dark:bg-slate-700 my-1"></div>}
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-800">{item.text}</p>
-                  <p className="text-xs text-gray-500 mt-0.5">{item.time}</p>
+                  <p className="text-sm font-medium text-gray-800 dark:text-slate-200">{item.text}</p>
+                  <p className="text-xs text-gray-500 dark:text-slate-500 mt-0.5">{item.time}</p>
                 </div>
               </div>
             ))}
@@ -79,13 +93,13 @@ const Dashboard: React.FC = () => {
         </Card>
       </div>
 
-      <Card className="bg-gradient-to-r from-teal-500 to-emerald-600 text-white border-none">
+      <Card className="bg-gradient-to-r from-teal-500 to-emerald-600 dark:from-teal-600 dark:to-emerald-700 text-white border-none shadow-lg shadow-emerald-500/10">
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div>
                 <h3 className="text-xl font-bold mb-2">Yuk, Ikuti Survei Kesehatan Nasional!</h3>
-                <p className="text-teal-50 max-w-xl">Data Anda membantu pemerintah menentukan kebijakan kesehatan yang lebih tepat sasaran untuk tahun 2025.</p>
+                <p className="text-teal-50 dark:text-teal-100 max-w-xl">Data Anda membantu pemerintah menentukan kebijakan kesehatan yang lebih tepat sasaran untuk tahun 2025.</p>
             </div>
-            <Button className="bg-white text-teal-700 hover:bg-gray-100 border-none shrink-0">
+            <Button className="bg-white text-teal-700 hover:bg-gray-100 dark:bg-slate-900 dark:text-emerald-400 dark:hover:bg-slate-800 border-none shrink-0 shadow-none">
                 Mulai Survei
             </Button>
         </div>
