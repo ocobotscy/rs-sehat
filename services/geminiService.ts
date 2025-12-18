@@ -1,12 +1,5 @@
-
-import { GoogleGenAI, GenerateContentResponse } from "@google/genai";
+import { GoogleGenAI } from "@google/genai";
 import { BotMode } from '../types';
-
-// NOTE: In a real production app, this key should be proxied through a backend.
-// For this demo, we assume process.env.API_KEY is available or injected.
-const API_KEY = process.env.API_KEY || '';
-
-const ai = new GoogleGenAI({ apiKey: API_KEY });
 
 const EDUCATION_INSTRUCTION = `
 Anda adalah "SIMAS AI Assistant by Khoirul Anam", sebuah Asisten Edukasi Kesehatan AI.
@@ -71,18 +64,19 @@ Tugas Anda:
 Gunakan pendekatan PDSA (Plan-Do-Study-Act) dalam memberikan saran.
 `;
 
+/**
+ * Streams a response from the Gemini API based on the selected bot mode.
+ */
 export const streamGeminiResponse = async (
   prompt: string,
   mode: BotMode,
   onChunk: (text: string) => void,
   context?: string
 ) => {
-  if (!API_KEY) {
-    onChunk("Error: API Key is missing. Please configure process.env.API_KEY.");
-    return;
-  }
-
-  const modelId = 'gemini-2.5-flash';
+  // Always initialize GoogleGenAI inside the function to ensure it uses the correct API key.
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  
+  let modelId = 'gemini-3-flash-preview';
   let systemInstruction = '';
   let finalPrompt = prompt;
 
@@ -101,18 +95,21 @@ export const streamGeminiResponse = async (
         break;
     case BotMode.RESEARCH_ANALYST:
         systemInstruction = RESEARCH_ANALYST_INSTRUCTION;
+        modelId = 'gemini-3-pro-preview';
         if (context) {
             finalPrompt = `[DATA/KONTEKS]:\n${context}\n\n[INSTRUKSI]: Analisis data diatas dan jawab pertanyaan ini: ${prompt}`;
         }
         break;
     case BotMode.POLICY_SIMULATOR:
         systemInstruction = POLICY_SIMULATOR_INSTRUCTION;
+        modelId = 'gemini-3-pro-preview';
         if (context) {
             finalPrompt = `[PARAMETER SIMULASI]:\n${context}\n\n[PERTANYAAN]: ${prompt}`;
         }
         break;
     case BotMode.QUALITY_ADVISOR:
         systemInstruction = QUALITY_ADVISOR_INSTRUCTION;
+        modelId = 'gemini-3-pro-preview';
         if (context) {
             finalPrompt = `[DATA MUTU]:\n${context}\n\n[PERTANYAAN]: ${prompt}`;
         }

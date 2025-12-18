@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="id">
   <head>
@@ -25,12 +26,11 @@
                 900: '#064e3b',
                 950: '#022c22',
               },
-              // Premium Dark Mode Palette (Slate/Midnight Based)
               slate: {
-                800: '#1e293b', // Card Lighter
-                850: '#172033', // Card Darker
-                900: '#0f172a', // Sidebar/Nav
-                950: '#020617', // Main Bg
+                800: '#1e293b',
+                850: '#172033',
+                900: '#0f172a',
+                950: '#020617',
               }
             },
             animation: {
@@ -40,6 +40,7 @@
               'liquid': 'liquid 6s ease infinite',
               'shine': 'shine 2s infinite',
               'float': 'float 3s ease-in-out infinite',
+              'scan-y': 'scanY 2s ease-in-out infinite',
             },
             keyframes: {
               fadeIn: {
@@ -62,6 +63,11 @@
               float: {
                 '0%, 100%': { transform: 'translateY(0)' },
                 '50%': { transform: 'translateY(-3px)' },
+              },
+              scanY: {
+                '0%': { top: '0%' },
+                '50%': { top: '100%' },
+                '100%': { top: '0%' },
               }
             }
           }

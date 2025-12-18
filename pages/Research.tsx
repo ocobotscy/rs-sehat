@@ -1,37 +1,200 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { Card, Button, Badge } from '../components/UI';
 import { 
     LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
-    PieChart, Pie, Cell, Legend
+    PieChart, Pie, Cell, Legend, AreaChart, Area
 } from 'recharts';
+// Removed non-existent DEMOGRAPHIC_DATA from the import list
 import { 
-    DISEASE_TREND_DATA, SURVEY_LIST, RESEARCH_PAPERS, IMMUNIZATION_DATA, DEMOGRAPHIC_DATA 
+    DISEASE_TREND_DATA, SURVEY_LIST, RESEARCH_PAPERS, IMMUNIZATION_DATA 
 } from '../services/mockData';
 import { 
     FileText, Download, Lock, Brain, TrendingUp, Users, Activity, 
-    ClipboardCheck, Search, BookOpen, ChevronRight, Sparkles, XCircle, CheckCircle, ChevronLeft, Gift, AlertCircle
+    ClipboardCheck, Search, BookOpen, ChevronRight, Sparkles, XCircle, CheckCircle, ChevronLeft, Gift, AlertCircle,
+    Dna, Microscope, Globe, Cloud, Database, MonitorPlay, ScanLine, Info
 } from 'lucide-react';
 import { streamGeminiResponse } from '../services/geminiService';
 import { BotMode, Survey, ResearchPaper } from '../types';
 
-// Custom Tooltip for Dark Mode
-const CustomTooltip = ({ active, payload, label }: any) => {
-  if (active && payload && payload.length) {
+// --- Sub-Component: Genomic & Bioinformatics Lab ---
+const GenomicsLab: React.FC = () => {
+    const [dnaSequence, setDnaSequence] = useState("ATGC...GCTA...TAGC");
+    const [analyzing, setAnalyzing] = useState(false);
+    const [result, setResult] = useState<string | null>(null);
+
+    const runAnalysis = () => {
+        setAnalyzing(true);
+        setTimeout(() => {
+            setResult("Varian Genetik Terdeteksi: CYP2C19*2 (Metabolisme Obat Lambat). Rekomendasi: Penyesuaian dosis Clopidogrel.");
+            setAnalyzing(false);
+        }, 2000);
+    };
+
     return (
-      <div className="bg-white dark:bg-slate-800 p-3 border border-gray-100 dark:border-slate-700 rounded-lg shadow-lg">
-        {label && <p className="text-sm font-bold text-gray-800 dark:text-white mb-2">{label}</p>}
-        {payload.map((entry: any, index: number) => (
-          <p key={index} className="text-xs" style={{ color: entry.color }}>
-            {entry.name}: <span className="font-bold">{entry.value}</span>
-          </p>
-        ))}
-      </div>
+        <Card className="border-indigo-200 dark:border-indigo-500/30" title="Analisis Genomik & Bioinformatika">
+            <div className="space-y-4">
+                <div className="p-4 bg-slate-900 rounded-xl font-mono text-emerald-400 text-xs break-all relative overflow-hidden h-24 flex items-center">
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent z-10"></div>
+                    <div className="animate-pulse">
+                        AGCTTAGCCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGC
+                    </div>
+                </div>
+                <div className="flex justify-between items-center">
+                    <p className="text-xs text-gray-500 dark:text-slate-400 max-w-xs">
+                        Analisis DNA untuk terapi berbasis gen (Personalized Medicine).
+                    </p>
+                    <Button onClick={runAnalysis} disabled={analyzing} className="bg-indigo-600 hover:bg-indigo-700">
+                        {analyzing ? <Activity className="w-4 h-4 animate-spin" /> : <Dna className="w-4 h-4" />}
+                        {analyzing ? "Menganalisis..." : "Run Sequence"}
+                    </Button>
+                </div>
+                {result && (
+                    <div className="p-3 bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-800 rounded-lg animate-fade-in">
+                        <p className="text-xs font-bold text-indigo-700 dark:text-indigo-300 flex items-center gap-2">
+                            <CheckCircle className="w-3 h-3" /> Hasil Analisis Bioinformatika:
+                        </p>
+                        <p className="text-xs text-indigo-600 dark:text-indigo-200 mt-1">{result}</p>
+                    </div>
+                )}
+            </div>
+        </Card>
     );
-  }
-  return null;
 };
 
-// --- Sub-Component: AI Insight Generator ---
+// --- Sub-Component: AI Diagnostic Simulator ---
+const AIDiagnosticHub: React.FC = () => {
+    const [scanning, setScanning] = useState(false);
+    const [progress, setProgress] = useState(0);
+
+    const startScan = () => {
+        setScanning(true);
+        setProgress(0);
+        const interval = setInterval(() => {
+            setProgress(p => {
+                if (p >= 100) {
+                    clearInterval(interval);
+                    setScanning(false);
+                    return 100;
+                }
+                return p + 5;
+            });
+        }, 100);
+    };
+
+    return (
+        <Card title="AI Diagnostics Hub (Imaging Analysis)" className="relative overflow-hidden">
+            <div className="aspect-square bg-gray-100 dark:bg-slate-900 rounded-2xl mb-4 flex items-center justify-center border-2 border-dashed border-gray-200 dark:border-slate-800 relative group overflow-hidden">
+                <img src="https://images.unsplash.com/photo-1530497610245-94d3c16cda28?w=400&q=80" className="w-full h-full object-cover opacity-60 grayscale group-hover:grayscale-0 transition-all" />
+                
+                {scanning && (
+                    <div className="absolute inset-0 z-20">
+                        <div className="w-full h-0.5 bg-emerald-400 shadow-[0_0_15px_rgba(52,211,153,0.8)] absolute animate-scan-y"></div>
+                        <div className="absolute inset-0 bg-emerald-500/10 flex items-center justify-center">
+                            <span className="bg-slate-900/80 px-3 py-1 rounded-full text-white text-xs font-bold backdrop-blur-md">Scanning Patterns: {progress}%</span>
+                        </div>
+                    </div>
+                )}
+
+                {!scanning && progress === 100 && (
+                    <div className="absolute inset-0 bg-emerald-500/20 flex flex-col items-center justify-center p-4 text-center z-10 backdrop-blur-sm">
+                        <CheckCircle className="w-12 h-12 text-emerald-600 mb-2" />
+                        <h5 className="font-bold text-emerald-800 dark:text-emerald-100 text-sm">Pola Teridentifikasi</h5>
+                        <p className="text-[10px] text-emerald-700 dark:text-emerald-300">Akurasi AI: 98.4% - Menyarankan fokus pada lobus kanan bawah.</p>
+                    </div>
+                )}
+                
+                {!scanning && progress === 0 && (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-400">
+                        <ScanLine className="w-12 h-12 mb-2 opacity-20" />
+                        <p className="text-xs">Drag & Drop Citra Medis (CT/MRI)</p>
+                    </div>
+                )}
+            </div>
+            <Button onClick={startScan} disabled={scanning} className="w-full">
+                {scanning ? "Memproses Pola..." : "Mulai Analisis AI"}
+            </Button>
+        </Card>
+    );
+};
+
+// --- Sub-Component: Digital Epi-Modeler ---
+const DigitalEpiModeler: React.FC = () => {
+    return (
+        <Card title="Digital Epidemiology Modeling (Real-time)" className="lg:col-span-2">
+            <div className="flex items-center gap-4 mb-6">
+                <div className="flex-1 p-3 bg-red-50 dark:bg-red-500/10 rounded-xl border border-red-100 dark:border-red-900/30">
+                    <p className="text-[10px] uppercase font-black text-red-600 dark:text-red-400 mb-1">R0 Effective</p>
+                    <p className="text-xl font-bold text-red-700 dark:text-red-300">1.25 <span className="text-[10px] font-normal text-gray-500">▲</span></p>
+                </div>
+                <div className="flex-1 p-3 bg-blue-50 dark:bg-blue-500/10 rounded-xl border border-blue-100 dark:border-blue-900/30">
+                    <p className="text-[10px] uppercase font-black text-blue-600 dark:text-blue-400 mb-1">Estimated Peak</p>
+                    <p className="text-xl font-bold text-blue-700 dark:text-blue-300">Mar 2025</p>
+                </div>
+                <div className="flex-1 p-3 bg-emerald-50 dark:bg-emerald-500/10 rounded-xl border border-emerald-100 dark:border-emerald-900/30">
+                    <p className="text-[10px] uppercase font-black text-emerald-600 dark:text-emerald-400 mb-1">Confidence</p>
+                    <p className="text-xl font-bold text-emerald-700 dark:text-emerald-300">92%</p>
+                </div>
+            </div>
+            <div className="h-64 w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={DISEASE_TREND_DATA}>
+                        <defs>
+                            <linearGradient id="colorEpi" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="5%" stopColor="#ef4444" stopOpacity={0.3}/>
+                                <stop offset="95%" stopColor="#ef4444" stopOpacity={0}/>
+                            </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} strokeOpacity={0.1} />
+                        <XAxis dataKey="name" tick={{fontSize: 10}} />
+                        <YAxis tick={{fontSize: 10}} />
+                        <Tooltip />
+                        <Area type="monotone" dataKey="ISPA" name="Observasi" stroke="#ef4444" fill="url(#colorEpi)" strokeWidth={3} />
+                        <Line type="monotone" dataKey="ISPA" name="Prediksi AI" stroke="#94a3b8" strokeDasharray="5 5" />
+                    </AreaChart>
+                </ResponsiveContainer>
+            </div>
+            <div className="mt-4 flex items-center gap-2 text-[10px] text-gray-500 bg-gray-50 dark:bg-slate-800 p-2 rounded-lg">
+                <Info className="w-3 h-3" />
+                Prediksi berbasis data real-time integrasi SATUSEHAT & SIMRS.
+            </div>
+        </Card>
+    );
+};
+
+// --- Sub-Component: CRIS Dashboard ---
+const CRISDashboard: React.FC = () => {
+    return (
+        <Card title="Clinical Research Information System (CRIS)" className="lg:col-span-1">
+            <div className="space-y-4 mt-2">
+                {[
+                    { title: "Uji Klinis Vaksin Baru", recruited: 450, target: 500, status: "Aktif" },
+                    { title: "Studi Observasi DM tipe 2", recruited: 120, target: 150, status: "Aktif" },
+                    { title: "Studi Pola Tidur Gen-Z", recruited: 1000, target: 1000, status: "Closed" },
+                ].map((trial, i) => (
+                    <div key={i} className="p-3 bg-gray-50 dark:bg-slate-900/50 rounded-xl border border-gray-100 dark:border-slate-800">
+                        <div className="flex justify-between items-start mb-2">
+                            <h6 className="text-xs font-bold text-gray-800 dark:text-slate-100">{trial.title}</h6>
+                            <Badge color={trial.status === 'Aktif' ? 'green' : 'blue'}>{trial.status}</Badge>
+                        </div>
+                        <div className="flex justify-between text-[10px] text-gray-500 mb-1">
+                            <span>Rekrutmen Pasien</span>
+                            <span>{trial.recruited}/{trial.target}</span>
+                        </div>
+                        <div className="w-full bg-gray-200 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                            <div className="bg-primary-500 h-full transition-all" style={{ width: `${(trial.recruited / trial.target) * 100}%` }}></div>
+                        </div>
+                    </div>
+                ))}
+                <Button variant="outline" className="w-full text-xs">
+                    <Database className="w-3 h-3 mr-2" /> Kelola Data Pasien (SOP)
+                </Button>
+            </div>
+        </Card>
+    );
+};
+
+// --- Sub-Component: AI Insight Card (Original) ---
 const AIInsightCard: React.FC = () => {
     const [insight, setInsight] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
@@ -58,7 +221,7 @@ const AIInsightCard: React.FC = () => {
 
     return (
         <Card className="bg-gradient-to-r from-violet-500 to-fuchsia-600 dark:from-violet-600 dark:to-fuchsia-700 text-white border-none relative overflow-hidden">
-            <div className="relative z-10 p-2">
+            <div className="relative z-10">
                 <div className="flex items-center gap-2 mb-3">
                     <Sparkles className="w-5 h-5 text-yellow-300 animate-pulse" />
                     <h3 className="font-bold text-lg">AI Smart Insight</h3>
@@ -80,7 +243,6 @@ const AIInsightCard: React.FC = () => {
                     <div className="space-y-2 animate-pulse">
                         <div className="h-4 bg-white/20 rounded w-3/4"></div>
                         <div className="h-4 bg-white/20 rounded w-full"></div>
-                        <div className="h-4 bg-white/20 rounded w-5/6"></div>
                     </div>
                 )}
 
@@ -104,7 +266,6 @@ const SurveyTaker: React.FC<{ survey: Survey; onClose: () => void }> = ({ survey
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isDone, setIsDone] = useState(false);
 
-    // Mock Questions
     const questions = [
         "Seberapa sering Anda mengonsumsi buah dan sayur dalam seminggu terakhir?",
         "Apakah Anda rutin melakukan aktivitas fisik minimal 30 menit sehari?",
@@ -179,47 +340,20 @@ const SurveyTaker: React.FC<{ survey: Survey; onClose: () => void }> = ({ survey
                     )}
                 </div>
             </div>
-            
-            <div className="bg-white dark:bg-slate-900 p-4 border-t border-gray-200 dark:border-slate-800">
-                <div className="w-full bg-gray-100 dark:bg-slate-700 rounded-full h-2 max-w-md mx-auto">
-                    <div className="bg-primary-500 h-2 rounded-full transition-all duration-300" style={{ width: `${((step + 1) / questions.length) * 100}%` }}></div>
-                </div>
-            </div>
         </div>
     );
 };
 
 // --- Sub-Component: Paper Reader ---
 const PaperReader: React.FC<{ paper: ResearchPaper; onClose: () => void }> = ({ paper, onClose }) => {
-    
-    const handleDownload = () => {
-        // Simulasi Download
-        const element = document.createElement("a");
-        const file = new Blob([`JUDUL: ${paper.title}\n\n${paper.content?.replace(/<[^>]*>?/gm, '')}`], {type: 'text/plain'});
-        element.href = URL.createObjectURL(file);
-        element.download = `${paper.id}_Research_Paper.txt`;
-        document.body.appendChild(element); // Required for this to work in FireFox
-        element.click();
-        
-        // Show fake toast (alert for now)
-        alert(`Mengunduh dokumen: ${paper.title}.pdf`);
-    };
-
     return (
         <div className="fixed inset-0 bg-white dark:bg-slate-950 z-50 overflow-y-auto animate-fade-in flex flex-col">
             <div className="sticky top-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur border-b border-gray-200 dark:border-slate-800 px-6 py-4 flex justify-between items-center z-10">
-                <div className="flex items-center gap-4">
-                    <button onClick={onClose} className="p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-colors flex items-center gap-1 text-gray-600 dark:text-slate-300 font-medium">
-                        <ChevronLeft className="w-5 h-5" /> Kembali
-                    </button>
-                    <div className="hidden md:block">
-                        <h3 className="font-bold text-gray-800 dark:text-white line-clamp-1 max-w-md">{paper.title}</h3>
-                    </div>
-                </div>
+                <button onClick={onClose} className="p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-colors flex items-center gap-1 text-gray-600 dark:text-slate-300 font-medium">
+                    <ChevronLeft className="w-5 h-5" /> Kembali
+                </button>
                 <div className="flex gap-2">
-                    <Button variant="outline" onClick={handleDownload} className="text-sm">
-                        <Download className="w-4 h-4 mr-2" /> Unduh PDF
-                    </Button>
+                    <Button variant="outline" className="text-sm"><Download className="w-4 h-4 mr-2" /> Unduh PDF</Button>
                 </div>
             </div>
 
@@ -228,23 +362,18 @@ const PaperReader: React.FC<{ paper: ResearchPaper; onClose: () => void }> = ({ 
                     <Badge color="blue">{paper.category}</Badge>
                     <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mt-4 mb-4 leading-tight">{paper.title}</h1>
                     <div className="flex flex-col sm:flex-row sm:items-center gap-4 text-sm text-gray-500 dark:text-slate-400">
-                        <div className="flex items-center gap-2">
-                            <Users className="w-4 h-4" />
-                            <span>{paper.author}</span>
-                        </div>
+                        <div className="flex items-center gap-2"><Users className="w-4 h-4" /> <span>{paper.author}</span></div>
                         <div className="hidden sm:block">•</div>
                         <div>{paper.date}</div>
                         <div className="hidden sm:block">•</div>
                         <div>Dibaca {paper.readCount} kali</div>
                     </div>
                 </div>
-
                 <div className="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-xl border border-blue-100 dark:border-blue-800 mb-8">
-                    <h4 className="font-bold text-blue-800 dark:text-blue-300 mb-2 text-sm uppercase tracking-wide">Ringkasan Eksekutif</h4>
-                    <p className="text-blue-900 dark:text-blue-100 leading-relaxed">{paper.summary}</p>
+                    <h4 className="font-bold text-blue-800 dark:text-blue-300 mb-2 text-sm uppercase tracking-wide text-xs">Ringkasan Eksekutif</h4>
+                    <p className="text-blue-900 dark:text-blue-100 leading-relaxed text-sm">{paper.summary}</p>
                 </div>
-
-                <div className="prose prose-blue dark:prose-invert max-w-none text-gray-700 dark:text-slate-300">
+                <div className="prose prose-blue dark:prose-invert max-w-none text-gray-700 dark:text-slate-300 text-sm">
                     <div dangerouslySetInnerHTML={{ __html: paper.content || '<p>Konten lengkap sedang dimuat...</p>' }} />
                 </div>
             </div>
@@ -252,324 +381,176 @@ const PaperReader: React.FC<{ paper: ResearchPaper; onClose: () => void }> = ({ 
     );
 };
 
-// --- Sub-Component: Redeem Modal ---
-const RedeemModal: React.FC<{ onClose: () => void, points: number }> = ({ onClose, points }) => {
-    return (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 animate-fade-in">
-            <div className="bg-white dark:bg-slate-800 rounded-2xl w-full max-w-md overflow-hidden animate-fade-in-up">
-                <div className="bg-primary-600 dark:bg-primary-700 p-6 text-white text-center">
-                    <Gift className="w-12 h-12 mx-auto mb-2 opacity-90" />
-                    <h3 className="text-xl font-bold">Tukar Poin Riset</h3>
-                    <p className="text-primary-100 text-sm">Saldo Anda: <span className="font-bold text-white">{points} Poin</span></p>
-                </div>
-                <div className="p-6 space-y-4 max-h-[60vh] overflow-y-auto custom-scrollbar">
-                    {[
-                        { title: 'Voucher Vitamin Rp50rb', cost: 200, icon: '💊' },
-                        { title: 'Konsultasi Dokter Gratis', cost: 350, icon: '👨‍⚕️' },
-                        { title: 'Saldo E-Wallet Rp20rb', cost: 400, icon: '💳' },
-                        { title: 'Paket Data Internet 2GB', cost: 150, icon: '📱' },
-                    ].map((item, i) => (
-                        <div key={i} className="flex items-center justify-between p-4 border border-gray-100 dark:border-slate-700 rounded-xl hover:border-primary-200 dark:hover:border-primary-500 hover:bg-primary-50 dark:hover:bg-primary-500/10 transition-all cursor-pointer group">
-                            <div className="flex items-center gap-3">
-                                <span className="text-2xl">{item.icon}</span>
-                                <div>
-                                    <h4 className="font-bold text-gray-800 dark:text-white text-sm">{item.title}</h4>
-                                    <span className="text-xs text-primary-600 dark:text-primary-400 font-bold">{item.cost} Poin</span>
-                                </div>
-                            </div>
-                            <Button 
-                                variant={points >= item.cost ? "primary" : "ghost"} 
-                                className={`text-xs py-1 px-3 ${points < item.cost ? 'opacity-50 cursor-not-allowed' : ''}`}
-                                disabled={points < item.cost}
-                                onClick={() => alert(`Berhasil menukar: ${item.title}`)}
-                            >
-                                Tukar
-                            </Button>
-                        </div>
-                    ))}
-                </div>
-                <div className="p-4 border-t border-gray-100 dark:border-slate-700 bg-gray-50 dark:bg-slate-900/50 text-center">
-                    <button onClick={onClose} className="text-gray-500 dark:text-slate-400 font-medium hover:text-gray-800 dark:hover:text-white">Tutup</button>
-                </div>
-            </div>
-        </div>
-    );
-};
-
 const Research: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'surveys' | 'library'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'lab' | 'surveys' | 'library'>('dashboard');
   const [activeSurvey, setActiveSurvey] = useState<Survey | null>(null);
   const [readingPaper, setReadingPaper] = useState<ResearchPaper | null>(null);
-  const [showRedeem, setShowRedeem] = useState(false);
 
-  // Handlers
+  // Fix: Added handleStartSurvey to resolve compilation error on line 515
   const handleStartSurvey = (survey: Survey) => {
-      setActiveSurvey(survey);
+    setActiveSurvey(survey);
   };
 
+  // Fix: Added handleReadPaper to resolve compilation error on line 533
   const handleReadPaper = (paper: ResearchPaper) => {
-      setReadingPaper(paper);
+    setReadingPaper(paper);
   };
 
-  const handleDownloadPaper = (title: string) => {
-      alert(`Mengunduh dokumen PDF: ${title}.pdf\nSilakan cek folder unduhan Anda.`);
-  };
-
-  // Render Views
   if (activeSurvey) return <SurveyTaker survey={activeSurvey} onClose={() => setActiveSurvey(null)} />;
   if (readingPaper) return <PaperReader paper={readingPaper} onClose={() => setReadingPaper(null)} />;
 
   return (
     <div className="space-y-6 animate-fade-in">
-      {/* Header & Tabs */}
       <div className="flex flex-col md:flex-row justify-between items-end gap-4">
         <div>
             <h2 className="text-2xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
-                <FlaskConicalIcon className="w-6 h-6 text-primary-600 dark:text-primary-400" />
+                <Microscope className="w-6 h-6 text-primary-600 dark:text-primary-400" />
                 Penelitian & Informatika Medik
             </h2>
-            <p className="text-gray-500 dark:text-slate-400 text-sm mt-1">Platform partisipasi masyarakat dalam riset kesehatan berbasis data.</p>
+            <p className="text-gray-500 dark:text-slate-400 text-sm mt-1">Platform integrasi penelitian kesehatan modern berbasis data dan AI.</p>
         </div>
-        <div className="flex bg-white dark:bg-slate-800 p-1 rounded-lg border border-gray-200 dark:border-slate-700 shadow-sm">
+        <div className="flex bg-white dark:bg-slate-800 p-1 rounded-lg border border-gray-200 dark:border-slate-700 shadow-sm overflow-x-auto max-w-full">
             {[
-                { id: 'dashboard', label: 'Dashboard Data', icon: Activity },
+                { id: 'dashboard', label: 'Data Hub', icon: Activity },
+                { id: 'lab', label: 'Lab Informatika', icon: MonitorPlay },
                 { id: 'surveys', label: 'Pusat Survei', icon: ClipboardCheck },
                 { id: 'library', label: 'Perpustakaan', icon: BookOpen },
             ].map(tab => (
                 <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id as any)}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                    className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all whitespace-nowrap ${
                         activeTab === tab.id 
                         ? 'bg-primary-100 dark:bg-primary-500/20 text-primary-700 dark:text-primary-300 shadow-sm' 
                         : 'text-gray-500 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-700'
                     }`}
                 >
                     <tab.icon className="w-4 h-4" />
-                    <span className="hidden sm:inline">{tab.label}</span>
+                    <span>{tab.label}</span>
                 </button>
             ))}
         </div>
       </div>
 
-      {/* --- TAB 1: DASHBOARD --- */}
+      {/* --- TAB: DASHBOARD --- */}
       {activeTab === 'dashboard' && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fade-in-up">
-            {/* AI Insight Section */}
             <div className="lg:col-span-1">
                 <AIInsightCard />
             </div>
-
-            {/* Top Metrics */}
             <div className="lg:col-span-2 grid grid-cols-2 gap-4">
                 <Card className="flex items-center justify-between p-4 bg-blue-50 dark:bg-blue-500/10 border-blue-100 dark:border-blue-800">
                     <div>
-                        <p className="text-sm text-blue-600 dark:text-blue-300 font-medium">Partisipan Riset</p>
-                        <h4 className="text-2xl font-bold text-gray-900 dark:text-white">12,540</h4>
-                        <span className="text-xs text-blue-500 dark:text-blue-400">+12% bulan ini</span>
+                        <p className="text-xs text-blue-600 dark:text-blue-300 font-bold uppercase">Data Point Riset</p>
+                        <h4 className="text-2xl font-bold text-gray-900 dark:text-white">12.5M+</h4>
                     </div>
-                    <Users className="w-8 h-8 text-blue-300 dark:text-blue-500/50" />
+                    <Globe className="w-10 h-10 text-blue-300/30" />
                 </Card>
                 <Card className="flex items-center justify-between p-4 bg-emerald-50 dark:bg-emerald-500/10 border-emerald-100 dark:border-emerald-800">
                     <div>
-                        <p className="text-sm text-emerald-600 dark:text-emerald-300 font-medium">Survei Selesai</p>
-                        <h4 className="text-2xl font-bold text-gray-900 dark:text-white">85</h4>
-                        <span className="text-xs text-emerald-500 dark:text-emerald-400">Total Program</span>
+                        <p className="text-xs text-emerald-600 dark:text-emerald-300 font-bold uppercase">Interoperability</p>
+                        <h4 className="text-2xl font-bold text-gray-900 dark:text-white">SATUSEHAT</h4>
                     </div>
-                    <ClipboardCheck className="w-8 h-8 text-emerald-300 dark:text-emerald-500/50" />
+                    <Activity className="w-10 h-10 text-emerald-300/30" />
                 </Card>
             </div>
-
-            {/* Main Charts */}
-            <Card className="lg:col-span-2" title="Tren Penyakit (2025)">
-                <div className="h-80 w-full mt-2">
+            <Card className="lg:col-span-3" title="Surveilans Epidemiologi Digital Nasional">
+                <div className="h-80 w-full">
                     <ResponsiveContainer width="100%" height="100%">
                         <LineChart data={DISEASE_TREND_DATA}>
-                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" strokeOpacity={0.2} />
-                            <XAxis dataKey="name" tick={{fontSize: 12, fill: '#94a3b8'}} />
-                            <YAxis tick={{fontSize: 12, fill: '#94a3b8'}} />
-                            <Tooltip content={<CustomTooltip />} />
-                            <Legend wrapperStyle={{paddingTop: '10px'}} />
-                            <Line type="monotone" dataKey="ISPA" stroke="#3b82f6" strokeWidth={2} dot={false} activeDot={{r: 6}} />
-                            <Line type="monotone" dataKey="Diabetes" stroke="#10b981" strokeWidth={2} dot={false} />
-                            <Line type="monotone" dataKey="Diare" stroke="#f59e0b" strokeWidth={2} dot={false} />
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} strokeOpacity={0.1} />
+                            <XAxis dataKey="name" tick={{fontSize: 10}} />
+                            <YAxis tick={{fontSize: 10}} />
+                            <Tooltip />
+                            <Legend />
+                            <Line type="monotone" dataKey="ISPA" stroke="#3b82f6" strokeWidth={3} dot={{r:4}} />
+                            <Line type="monotone" dataKey="Diabetes" stroke="#10b981" strokeWidth={3} dot={{r:4}} />
+                            <Line type="monotone" dataKey="Diare" stroke="#f59e0b" strokeWidth={3} dot={{r:4}} />
                         </LineChart>
                     </ResponsiveContainer>
                 </div>
             </Card>
-
-            <div className="lg:col-span-1 space-y-6">
-                <Card title="Cakupan Imunisasi">
-                    <div className="h-64 w-full relative">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <PieChart>
-                                <Pie
-                                    data={IMMUNIZATION_DATA}
-                                    cx="50%"
-                                    cy="50%"
-                                    innerRadius={60}
-                                    outerRadius={80}
-                                    paddingAngle={5}
-                                    dataKey="value"
-                                >
-                                    {IMMUNIZATION_DATA.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={entry.color} />
-                                    ))}
-                                </Pie>
-                                <Tooltip content={<CustomTooltip />} />
-                                <Legend verticalAlign="bottom" height={36}/>
-                            </PieChart>
-                        </ResponsiveContainer>
-                        <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none mb-8">
-                            <span className="text-2xl font-bold text-gray-800 dark:text-white">65%</span>
-                            <span className="text-xs text-gray-500 dark:text-slate-400">Lengkap</span>
-                        </div>
-                    </div>
-                </Card>
-
-                <Card title="Demografi Responden">
-                     <div className="h-48 w-full">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={DEMOGRAPHIC_DATA} layout="vertical">
-                                <XAxis type="number" hide />
-                                <YAxis dataKey="age" type="category" width={40} tick={{fontSize: 10, fill: '#94a3b8'}} />
-                                <Tooltip content={<CustomTooltip />} cursor={{fill: 'transparent'}} />
-                                <Bar dataKey="participants" fill="#6366f1" radius={[0, 4, 4, 0]} barSize={20} />
-                            </BarChart>
-                        </ResponsiveContainer>
-                     </div>
-                </Card>
-            </div>
         </div>
       )}
 
-      {/* --- TAB 2: SURVEI --- */}
-      {activeTab === 'surveys' && (
+      {/* --- TAB: LAB INFORMATIKA --- */}
+      {activeTab === 'lab' && (
         <div className="space-y-6 animate-fade-in-up">
-            <div className="bg-primary-50 dark:bg-primary-500/10 border border-primary-200 dark:border-primary-500/30 rounded-xl p-6 flex flex-col md:flex-row justify-between items-center gap-4">
-                <div className="flex items-center gap-4">
-                    <div className="bg-primary-100 dark:bg-primary-500/20 p-3 rounded-full">
-                        <TrendingUp className="w-8 h-8 text-primary-600 dark:text-primary-400" />
-                    </div>
-                    <div>
-                        <h3 className="text-lg font-bold text-gray-800 dark:text-white">Program Loyalitas Riset</h3>
-                        <p className="text-sm text-gray-600 dark:text-slate-400">Anda memiliki <span className="font-bold text-primary-600 dark:text-primary-400">450 Poin Riset</span>. Tukarkan dengan voucher kesehatan.</p>
-                    </div>
-                </div>
-                <Button variant="primary" onClick={() => setShowRedeem(true)}>Tukar Poin</Button>
-            </div>
-
-            <h3 className="font-bold text-lg text-gray-800 dark:text-white mt-6">Survei Tersedia</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {SURVEY_LIST.map((survey) => (
-                    <Card key={survey.id} className="hover:border-primary-300 dark:hover:border-primary-500/50 transition-all cursor-pointer group flex flex-col justify-between">
-                        <div>
-                            <div className="flex justify-between items-start mb-2">
-                                <Badge color={survey.status === 'active' ? 'green' : survey.status === 'completed' ? 'blue' : 'yellow'}>
-                                    {survey.status.toUpperCase()}
-                                </Badge>
-                                <span className="text-xs font-bold text-yellow-600 dark:text-yellow-400 flex items-center gap-1">
-                                    <Sparkles className="w-3 h-3" /> +{survey.points} Poin
-                                </span>
-                            </div>
-                            <h4 className="font-bold text-gray-900 dark:text-slate-100 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">{survey.title}</h4>
-                            <p className="text-sm text-gray-500 dark:text-slate-400 mt-1 line-clamp-2">{survey.description}</p>
-                            
-                            <div className="mt-4 pt-4 border-t border-gray-50 dark:border-slate-700 flex items-center justify-between text-xs text-gray-500 dark:text-slate-400">
-                                <div className="flex gap-3">
-                                    <span className="flex items-center gap-1"><Brain className="w-3 h-3" /> {survey.category}</span>
-                                    <span className="flex items-center gap-1"><Activity className="w-3 h-3" /> {survey.estimatedTime}</span>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <GenomicsLab />
+                <AIDiagnosticHub />
+                <CRISDashboard />
+                <DigitalEpiModeler />
+                <Card title="Data Sharing & Cloud Workspace" className="lg:col-span-1">
+                    <div className="flex flex-col h-full justify-between">
+                        <div className="space-y-3">
+                            <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-slate-900/50 rounded-xl border border-gray-100 dark:border-slate-800">
+                                <Cloud className="w-5 h-5 text-blue-500" />
+                                <div className="flex-1">
+                                    <p className="text-xs font-bold text-gray-800 dark:text-slate-100">Dataset_Genomik_RW05.json</p>
+                                    <p className="text-[10px] text-gray-500">Shared with 3 Institutions</p>
                                 </div>
-                                <div className="flex items-center gap-1">
-                                    <Users className="w-3 h-3" /> {survey.participants}
+                            </div>
+                            <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-slate-900/50 rounded-xl border border-gray-100 dark:border-slate-800">
+                                <Lock className="w-5 h-5 text-emerald-500" />
+                                <div className="flex-1">
+                                    <p className="text-xs font-bold text-gray-800 dark:text-slate-100">Secure_Clinical_Trial_V2.enc</p>
+                                    <p className="text-[10px] text-gray-500">Encrypted AES-256</p>
                                 </div>
                             </div>
                         </div>
-
-                        {survey.status === 'active' && (
-                            <div className="mt-3">
-                                <div className="w-full bg-gray-100 dark:bg-slate-700 rounded-full h-1.5 mb-1">
-                                    <div className="bg-primary-500 h-1.5 rounded-full" style={{width: `${survey.progress || 0}%`}}></div>
-                                </div>
-                                <div className="text-[10px] text-right text-gray-400 dark:text-slate-500">Progress: {survey.progress}%</div>
-                            </div>
-                        )}
-                        
-                        <div className="mt-4">
-                            <Button 
-                                variant={survey.status === 'active' ? 'primary' : 'outline'} 
-                                className="w-full text-sm py-2"
-                                disabled={survey.status !== 'active'}
-                                onClick={() => survey.status === 'active' && handleStartSurvey(survey)}
-                            >
-                                {survey.status === 'active' ? 'Mulai Survei' : survey.status === 'completed' ? 'Sudah Selesai' : 'Segera Hadir'}
+                        <div className="mt-6">
+                            <Button className="w-full text-xs">
+                                <Search className="w-3 h-3 mr-2" /> Buka Collaborative Workspace
                             </Button>
                         </div>
-                    </Card>
-                ))}
+                    </div>
+                </Card>
             </div>
         </div>
       )}
 
-      {/* --- TAB 3: PERPUSTAKAAN --- */}
-      {activeTab === 'library' && (
-        <div className="space-y-6 animate-fade-in-up">
-            <div className="flex gap-4 mb-6">
-                <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
-                    <input 
-                        type="text" 
-                        placeholder="Cari jurnal, topik, atau penulis..." 
-                        className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
-                    />
-                </div>
-                <Button variant="outline" className="hidden sm:flex">Filter</Button>
-            </div>
-
-            <div className="space-y-4">
-                {RESEARCH_PAPERS.map((paper) => (
-                    <Card key={paper.id} className="hover:shadow-md transition-shadow">
-                        <div className="flex flex-col md:flex-row gap-6">
-                            <div className="flex-1">
-                                <div className="flex items-center gap-2 mb-2">
-                                    <span className="text-[10px] font-bold uppercase tracking-wider text-primary-600 dark:text-primary-300 bg-primary-50 dark:bg-primary-500/10 px-2 py-1 rounded">
-                                        {paper.category}
-                                    </span>
-                                    <span className="text-xs text-gray-400">• {paper.date}</span>
-                                </div>
-                                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">{paper.title}</h3>
-                                <p className="text-sm text-gray-600 dark:text-slate-300 mb-4 leading-relaxed bg-gray-50 dark:bg-slate-900/50 p-3 rounded-lg border-l-4 border-primary-300 dark:border-primary-700">
-                                    <span className="font-bold text-gray-700 dark:text-slate-200 block mb-1">Ringkasan:</span>
-                                    {paper.summary}
-                                </p>
-                                <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-slate-400">
-                                    <span className="flex items-center gap-1"><Users className="w-3 h-3" /> Penulis: {paper.author}</span>
-                                    <span className="flex items-center gap-1"><BookOpen className="w-3 h-3" /> Dibaca: {paper.readCount} kali</span>
-                                </div>
-                            </div>
-                            <div className="flex flex-row md:flex-col gap-2 justify-center border-t md:border-t-0 md:border-l border-gray-100 dark:border-slate-700 pt-4 md:pt-0 md:pl-6 min-w-[140px]">
-                                <Button className="text-xs w-full" onClick={() => handleReadPaper(paper)}>
-                                    <FileText className="w-3 h-3 mr-1" /> Baca Detail
-                                </Button>
-                                <Button variant="outline" className="text-xs w-full" onClick={() => handleDownloadPaper(paper.title)}>
-                                    <Download className="w-3 h-3 mr-1" /> Unduh PDF
-                                </Button>
-                            </div>
+      {/* --- TAB: SURVEI --- */}
+      {activeTab === 'surveys' && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-fade-in-up">
+            {SURVEY_LIST.map((survey) => (
+                <Card key={survey.id} className="hover:border-primary-300 transition-all cursor-pointer group flex flex-col justify-between">
+                    <div>
+                        <div className="flex justify-between items-start mb-2">
+                            <Badge color="green">AKTIF</Badge>
+                            <span className="text-xs font-bold text-yellow-600 dark:text-yellow-400">+{survey.points} Poin</span>
                         </div>
-                    </Card>
-                ))}
-            </div>
+                        <h4 className="font-bold text-gray-900 dark:text-slate-100 group-hover:text-primary-600 transition-colors">{survey.title}</h4>
+                        <p className="text-sm text-gray-500 dark:text-slate-400 mt-1 line-clamp-2">{survey.description}</p>
+                    </div>
+                    <Button className="mt-4 w-full text-xs" onClick={() => handleStartSurvey(survey)}>Ikut Berpartisipasi</Button>
+                </Card>
+            ))}
         </div>
       )}
 
-      {showRedeem && <RedeemModal onClose={() => setShowRedeem(false)} points={450} />}
+      {/* --- TAB: PERPUSTAKAAN --- */}
+      {activeTab === 'library' && (
+        <div className="space-y-4 animate-fade-in-up">
+            {RESEARCH_PAPERS.map((paper) => (
+                <Card key={paper.id} className="hover:shadow-md transition-shadow">
+                    <div className="flex flex-col md:flex-row gap-6">
+                        <div className="flex-1">
+                            <Badge color="blue" className="mb-2">{paper.category}</Badge>
+                            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">{paper.title}</h3>
+                            <p className="text-xs text-gray-500 dark:text-slate-400 line-clamp-2">{paper.summary}</p>
+                        </div>
+                        <div className="flex flex-row md:flex-col gap-2 min-w-[140px]">
+                            <Button className="text-[10px] w-full" onClick={() => handleReadPaper(paper)}>Baca Jurnal</Button>
+                            <Button variant="outline" className="text-[10px] w-full">Unduh PDF</Button>
+                        </div>
+                    </div>
+                </Card>
+            ))}
+        </div>
+      )}
     </div>
   );
 };
-
-// Helper Icon Component for Header
-const FlaskConicalIcon: React.FC<{className?: string}> = ({className}) => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45l-5.069-10.127A2 2 0 0 1 14 9.527V2"/><path d="M8.5 2h7"/><path d="M7 16h10"/></svg>
-);
 
 export default Research;
